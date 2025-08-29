@@ -1,9 +1,7 @@
+package com.mycompany.intercambio_estudiantil;
+import java.io.* ;
 
-/**
- *
- * @author desiredheaven
- */
-public class Intercambio_estudiantil {
+public class Main {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
