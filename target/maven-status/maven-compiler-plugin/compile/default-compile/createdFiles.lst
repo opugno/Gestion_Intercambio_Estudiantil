@@ -1,1 +1,4 @@
-com/mycompany/intercambio_estudiantil/Intercambio_estudiantil.class
+com/mycompany/intercambioEstudiantil/Estudiante.class
+com/mycompany/intercambioEstudiantil/Tramite.class
+com/mycompany/intercambioEstudiantil/Main.class
+com/mycompany/intercambioEstudiantil/Convenio.class

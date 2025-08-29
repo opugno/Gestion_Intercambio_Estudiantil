@@ -1,8 +1,8 @@
-package com.mycompany.intercambio_estudiantil;
-import java.io.* ;
+package com.mycompany.intercambioEstudiantil;
+//import java.io.* ;
 
-public class Main {
-
+public class Main
+{
     public static void main(String[] args) {
         System.out.println("Hello World!");
     }
