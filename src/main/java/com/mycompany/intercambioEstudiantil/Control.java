@@ -53,6 +53,14 @@ public class Control
         return null;
     }
     
+    public List<Estudiante> listarEstudiantes() 
+    {
+        List<Estudiante> lista = new ArrayList<>(estudiantes.values()); // copia defensiva
+        lista.sort(Comparator.comparing(Estudiante::getNombre, String.CASE_INSENSITIVE_ORDER));
+        return Collections.unmodifiableList(lista); // no modificable desde afuera
+    }
+
+    
     
     //Agregar datos iniciales
     public void datos() {

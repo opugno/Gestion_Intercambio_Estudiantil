@@ -19,6 +19,7 @@ public class Main
             System.out.println("4) Ver estado de trámite");
             System.out.println("5) Listar convenios y trámites");
             System.out.println("6) Configurar requisitos de un convenio");
+            System.out.println("7) Ver estudiantes");
             System.out.println("0) Salir");
             System.out.print("Opcion: ");
             String menu = leer.nextLine();
@@ -35,7 +36,8 @@ public class Main
                         System.out.print("Elige a/b: ");
                         String modo = leer.nextLine().trim().toLowerCase();
 
-                        if ("a".equals(modo)) {
+                        if ("a".equals(modo)) 
+                        {
                             System.out.print("RUT: ");
                             String rut = leer.nextLine();
                             System.out.print("Nombre: ");
@@ -207,6 +209,32 @@ public class Main
                             {
                                 System.out.println("Opción inválida.");
                             }
+                        }
+                        break;
+                    }
+                    case "7": 
+                    {
+                        System.out.println("\n=== Listado de estudiantes ===");
+                        List<Estudiante> lista = new ArrayList<>(herramientas.listarEstudiantes());
+
+                        if (lista.isEmpty()) {
+                            System.out.println("No hay estudiantes registrados.");
+                            break;
+                        }
+
+                        // Encabezado tipo tabla
+                        System.out.printf("%-12s %-25s %-24s %-5s %-14s %-20s%n",
+                                "RUT", "Nombre", "Carrera", "Año", "Estado", "Convenio");
+
+                        for (Estudiante e : lista) {
+                            String conv = (e.getConvenio() != null) ? e.getConvenio().getNombre() : "-";
+                            System.out.printf("%-12s %-25s %-24s %-5d %-14s %-20s%n",
+                                    e.getRut(),
+                                    e.getNombre(),
+                                    e.getCarrera(),
+                                    e.getAnioIngreso(),
+                                    e.getEstadoProceso(),
+                                    conv);
                         }
                         break;
                     }
