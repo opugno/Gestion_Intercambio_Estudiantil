@@ -29,16 +29,40 @@ public class Main
                 {
                     case "1": 
                     {
-                        System.out.print("RUT: "); 
-                        String rut = leer.nextLine();
-                        System.out.print("Nombre: "); 
-                        String nombre = leer.nextLine();
-                        System.out.print("Carrera: "); 
-                        String carrera = leer.nextLine();
-                        System.out.print("Año ingreso: "); 
-                        int anioIngreso = Integer.parseInt(leer.nextLine());
-                        herramientas.registrarEstudiante(rut, nombre, carrera, anioIngreso);
-                        System.out.println("Estudiante Registrado");
+                        System.out.println("Registrar estudiante:");
+                        System.out.println("  a) Usando campos (rut, nombre, carrera, año)");
+                        System.out.println("  b) Usando objeto Estudiante");
+                        System.out.print("Elige a/b: ");
+                        String modo = leer.nextLine().trim().toLowerCase();
+
+                        if ("a".equals(modo)) {
+                            System.out.print("RUT: ");
+                            String rut = leer.nextLine();
+                            System.out.print("Nombre: ");
+                            String nombre = leer.nextLine();
+                            System.out.print("Carrera: ");
+                            String carrera = leer.nextLine();
+                            System.out.print("Año de ingreso: ");
+                            int anio = Integer.parseInt(leer.nextLine());
+
+                            herramientas.registrarEstudiante(rut, nombre, carrera, anio); // <-- sobrecarga por campos
+                            System.out.println("Estudiante registrado (por campos).");
+                        } else if ("b".equals(modo)) {
+                            System.out.print("RUT: ");
+                            String rut = leer.nextLine();
+                            System.out.print("Nombre: ");
+                            String nombre = leer.nextLine();
+                            System.out.print("Carrera: ");
+                            String carrera = leer.nextLine();
+                            System.out.print("Año de ingreso: ");
+                            int anio = Integer.parseInt(leer.nextLine());
+
+                            Estudiante e = new Estudiante(rut, nombre, carrera, anio, "Postulación", null);
+                            herramientas.registrarEstudiante(e); // <-- sobrecarga con objeto
+                            System.out.println("Estudiante registrado (por objeto).");
+                        } else {
+                            System.out.println("Opción inválida.");
+                        }
                         break;
                     }
                     case "2": 
