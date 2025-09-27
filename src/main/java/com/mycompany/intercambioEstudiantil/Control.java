@@ -6,7 +6,8 @@ public class Control
     //Primera coleccion, convenios
     private List<Convenio> convenios = new ArrayList<>();
     // Mapa de estudiantes por rut
-    private Map<String, Estudiante> estudiantes = new HashMap<>();
+    //private Map<String, Estudiante> estudiantes = new HashMap<>();
+    private HashMap<String, Estudiante> estudiantes = new HashMap<>();
     
     //GETTER Y SETTER
     public List<Convenio> getConvenios() 
