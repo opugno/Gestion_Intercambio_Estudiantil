@@ -1,7 +1,5 @@
 package com.mycompany.intercambioEstudiantil;
-
 import java.util.*;
-
 
 public class Control 
 {
@@ -11,13 +9,14 @@ public class Control
     private Map<String, Estudiante> estudiantes = new HashMap<>();
     
     //GETTER Y SETTER
-    public List<Convenio> getConvenios(){ 
-        return convenios; 
+    public List<Convenio> getConvenios() 
+    {
+        return List.copyOf(convenios);
     }
     
     public Collection<Estudiante> getEstudiantes() 
-    { 
-        return estudiantes.values(); 
+    {
+    return Collections.unmodifiableCollection(new ArrayList<>(estudiantes.values()));
     }
     
     // MÉTODOS y sobrecarga de metodos
