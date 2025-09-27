@@ -36,8 +36,12 @@ public class Tramite
         this.estudiante = estudiante;
     }
     
-    public Map<TipoDocumento, DocumentoSubido> getDocumentos(){
-        return documento;
+   // public Map<TipoDocumento, DocumentoSubido> getDocumentos(){
+   //     return documento;
+   // }
+    public Map<TipoDocumento, DocumentoSubido> getDocumentos()
+    {
+        return Collections.unmodifiableMap(new HashMap<>(documento));
     }
     public void setDocumento(Map<TipoDocumento, DocumentoSubido> documento){
         this.documento = documento;
