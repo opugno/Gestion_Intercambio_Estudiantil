@@ -10,6 +10,23 @@ public class Main
         herramientas.datos(); 
         
         Scanner leer = new Scanner(System.in);
+        //SIA 2.2
+        DataStore store = new DataStore(herramientas);
+
+        // Los datos se cargan desde CSV, si no hay datos puedes dejar los datos semillas
+        try 
+        {
+            store.load();
+            if (herramientas.getEstudiantes().isEmpty() && herramientas.getConvenios().isEmpty()) 
+            {
+                herramientas.datos(); // usa tus datos iniciales solo si no hay CSV
+            }
+        } catch (IOException ex) 
+        {
+            System.out.println("No se pudo cargar CSV: " + ex.getMessage());
+        }
+        
+        //MENÚ
         while(true)
         {
             System.out.println("\n=== Sistema Gestión de Intercambio ===");
@@ -222,7 +239,7 @@ public class Main
                             break;
                         }
 
-                        // Encabezado tipo tabla
+                        // El formato de como se muestra la lista
                         System.out.printf("%-12s %-25s %-24s %-5s %-14s %-20s%n",
                                 "RUT", "Nombre", "Carrera", "Año", "Estado", "Convenio");
 
@@ -238,7 +255,11 @@ public class Main
                         }
                         break;
                     }
-                    case "0": return;
+                    case "0": 
+                        try { store.save(); } catch (IOException ex) {
+                        System.out.println("No se pudo guardar CSV: " + ex.getMessage());
+                        }
+                        return;
                     default: System.out.println("Opción inválida.");
                 }
             } 

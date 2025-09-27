@@ -5,4 +5,5 @@ com\mycompany\intercambioEstudiantil\Main.class
 com\mycompany\intercambioEstudiantil\Convenio.class
 com\mycompany\intercambioEstudiantil\Tramite$Estado.class
 com\mycompany\intercambioEstudiantil\Control.class
+com\mycompany\intercambioEstudiantil\DataStore.class
 com\mycompany\intercambioEstudiantil\Tramite.class
