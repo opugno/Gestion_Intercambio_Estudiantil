@@ -184,6 +184,34 @@ public class Control
         t.subirDocumentoSeguro(tipo, nombreArchivo); // Aqui puede saltar DocumentoDuplicadoException
         c.validarYActualizarEstado(t);
     }
+    
+        // Eliminar y editar 
+    public boolean editarConvenio(String id,
+                                  String nuevoNombre,
+                                  String nuevaUniversidad,
+                                  String nuevoPais,
+                                  String nuevaDuracion,
+                                  String nuevaCarrera) {
+        Convenio c = buscarConvenio(id);
+        if (c == null) return false;
+        if (nuevoNombre != null && !nuevoNombre.isBlank())      c.setNombre(nuevoNombre);
+        if (nuevaUniversidad != null && !nuevaUniversidad.isBlank()) c.setUniversidadSocia(nuevaUniversidad);
+        if (nuevoPais != null && !nuevoPais.isBlank())           c.setPais(nuevoPais);
+        if (nuevaDuracion != null && !nuevaDuracion.isBlank())   c.setDuracion(nuevaDuracion);
+        if (nuevaCarrera != null && !nuevaCarrera.isBlank())     c.setCarreraAsociada(nuevaCarrera);
+        return true;
+    }
+
+    public boolean eliminarConvenio(String id) {
+        // sacamos a los estudiantes que lo tengan
+        for (Estudiante e : getEstudiantes()) {
+            if (e.getConvenio() != null && e.getConvenio().getIdConvenio().equals(id)) {
+                e.setConvenio(null);
+            }
+        }
+        // eliminar de la lista
+        return convenios.removeIf(x -> x.getIdConvenio().equals(id));
+    }
 
 }
 

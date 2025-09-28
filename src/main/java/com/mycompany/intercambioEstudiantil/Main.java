@@ -2,6 +2,8 @@ package com.mycompany.intercambioEstudiantil;
 
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
+
 
 public class Main
 {
@@ -42,7 +44,7 @@ public class Main
             System.out.println("2) Tramite");
             System.out.println("3) Subir documento a trámite");
             System.out.println("4) Ver estado de trámite");
-            System.out.println("5) Listar convenios y trámites");
+            System.out.println("5) Convenio");
             System.out.println("6) Configurar requisitos de un convenio");
             System.out.println("7) Ver estudiantes");
             System.out.println("0) Salir");
@@ -170,9 +172,9 @@ public class Main
                                         } catch (IllegalArgumentException ex) { // valueOf falló
                                             System.out.println("TipoDocumento inválido.");
                                         } catch (DocumentoDuplicadoException ex) {
-                                            System.out.println("⚠ " + ex.getMessage());
+                                            System.out.println( ex.getMessage());
                                         } catch (TramiteNoEncontradoException ex) {
-                                            System.out.println("⚠ " + ex.getMessage());
+                                            System.out.println( ex.getMessage());
                                         } catch (Exception ex) {
                                             System.out.println("Error inesperado: " + ex.getMessage());
                                         }
@@ -265,16 +267,131 @@ public class Main
                     }
                     case "5": 
                     {
-                        for (Convenio conve : herramientas.getConvenios()) 
+                        while (true) 
                         {
-                            System.out.println("\n[" + conve.getIdConvenio() + "] " + conve.getNombre() + " – Req: " + conve.getRequisitos());
-                            for (Tramite t : conve.getTramites()) 
-                            {
-                                System.out.println("  Trámite " + t.getIdTramite() + " | " + t.getEstudiante().getNombre() + " | " + t.getEstado());
-                                t.getDocumentos().forEach((k,v)-> System.out.println("    - " + k + " -> " + v.getNombreArchivo()));
+                            System.out.println("\n=== Submenú Convenios ===");
+                            System.out.println("1) Agregar convenio");
+                            System.out.println("2) Listar convenios");
+                            System.out.println("3) Modificar convenio");
+                            System.out.println("4) Eliminar convenio");
+                            System.out.println("0) Volver");
+                            System.out.print("Opción: ");
+                            String op5 = leer.nextLine();
+
+                            try {
+                                switch (op5) {
+                                    case "1": { // Agregar
+                                        System.out.print("ID: ");
+                                        String id = leer.nextLine();
+
+                                        System.out.print("Nombre: ");
+                                        String nom = leer.nextLine();
+
+                                        System.out.print("Universidad socia: ");
+                                        String uni = leer.nextLine();
+
+                                        System.out.print("País: ");
+                                        String pais = leer.nextLine();
+
+                                        System.out.print("Duración (ej: '6 meses'): ");
+                                        String dur = leer.nextLine();
+
+                                        System.out.print("Carrera asociada: ");
+                                        String car = leer.nextLine();
+
+                                        // Requisitos (opcional)
+                                        java.util.Set<TipoDocumento> req = new java.util.HashSet<>();
+                                        System.out.print("¿Agregar requisitos? (S/N): ");
+                                        String r = leer.nextLine();
+                                        if (r.equalsIgnoreCase("S")) {
+                                            System.out.println("Tipos válidos:");
+                                            for (TipoDocumento td : TipoDocumento.values()) System.out.println(" - " + td.name());
+                                            System.out.print("Ingresa requisitos separados por coma (ej: PASAPORTE,CERT_ALUMNO_REGULAR): ");
+                                            String linea = leer.nextLine();
+                                            if (!linea.isBlank()) {
+                                                for (String tok : linea.split(",")) {
+                                                    try { req.add(TipoDocumento.valueOf(tok.trim())); }
+                                                    catch (IllegalArgumentException ex) { System.out.println("Tipo inválido ignorado: " + tok.trim()); }
+                                                }
+                                            }
+                                        }
+
+                                        Convenio c = new Convenio(id, nom, uni, pais, req, dur, car);
+                                        herramientas.agregarConvenio(c);
+                                        System.out.println("✔ Convenio agregado.");
+                                        break;
+                                    }
+                                    case "2": { // Listar
+                                        var lista = herramientas.getConvenios();
+                                        if (lista.isEmpty()) {
+                                            System.out.println("No hay convenios.");
+                                        } else {
+                                            System.out.println("\nID | Nombre | Univ. socia | País | Duración | Carrera | Requisitos");
+                                            for (Convenio c : lista) {
+                                                String reqs = c.getRequisitos().isEmpty()
+                                                        ? "-"
+                                                        : String.join(",", c.getRequisitos().stream().map(Enum::name).collect(Collectors.toList()));
+                                                System.out.println(c.getIdConvenio() + " | " + c.getNombre() + " | " +
+                                                        c.getUniversidadSocia() + " | " + c.getPais() + " | " +
+                                                        c.getDuracion() + " | " + c.getCarreraAsociada() + " | " + reqs);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    case "3": { // Modificar
+                                        System.out.print("ID del convenio a modificar: ");
+                                        String id = leer.nextLine();
+                                        Convenio c = herramientas.buscarConvenio(id);
+                                        if (c == null) {
+                                            System.out.println("No existe convenio con id: " + id);
+                                            break;
+                                        }
+                                        System.out.print("Nuevo nombre (Enter='" + c.getNombre() + "'): ");
+                                        String nom = leer.nextLine(); if (nom.isBlank()) nom = null;
+
+                                        System.out.print("Nueva universidad socia (Enter='" + c.getUniversidadSocia() + "'): ");
+                                        String uni = leer.nextLine(); if (uni.isBlank()) uni = null;
+
+                                        System.out.print("Nuevo país (Enter='" + c.getPais() + "'): ");
+                                        String pais = leer.nextLine(); if (pais.isBlank()) pais = null;
+
+                                        System.out.print("Nueva duración (Enter='" + c.getDuracion() + "'): ");
+                                        String dur = leer.nextLine(); if (dur.isBlank()) dur = null;
+
+                                        System.out.print("Nueva carrera asociada (Enter='" + c.getCarreraAsociada() + "'): ");
+                                        String car = leer.nextLine(); if (car.isBlank()) car = null;
+
+                                        boolean ok = herramientas.editarConvenio(id, nom, uni, pais, dur, car);
+                                        System.out.println(ok ? "✔ Convenio actualizado." : "No se pudo actualizar.");
+                                        break;
+                                    }
+                                    case "4": { // Eliminar
+                                        System.out.print("ID del convenio a eliminar: ");
+                                        String id = leer.nextLine();
+                                        System.out.print("¿Confirmas eliminar el convenio " + id + "? (S/N): ");
+                                        String conf = leer.nextLine();
+                                        if (!conf.equalsIgnoreCase("S")) {
+                                            System.out.println("Operación cancelada.");
+                                            break;
+                                        }
+                                        boolean ok = herramientas.eliminarConvenio(id);
+                                        System.out.println(ok ? "✔ Convenio eliminado. Estudiantes desasociados." : "No existe ese convenio.");
+                                        break;
+                                    }
+                                    case "0":
+                                        System.out.println("Volviendo…");
+                                        break; // sale del switch
+                                    default:
+                                        System.out.println("Opción inválida.");
+                                }
+
+                                if (op5.equals("0")) break; // salir del while del submenú
+
+                            } catch (Exception e) {
+                                System.out.println("Error: " + e.getMessage());
                             }
                         }
-                        break;
+                        break; // volver al menú principal
                     }
                     case "6": 
                     {
