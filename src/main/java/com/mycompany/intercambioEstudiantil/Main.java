@@ -14,24 +14,32 @@ public class Main
         DataStore store = new DataStore(herramientas);
 
         // Los datos se cargan desde CSV, si no hay datos puedes dejar los datos semillas
-        try 
+        try {
+        store.load();
+        if (herramientas.getEstudiantes().isEmpty() && herramientas.getConvenios().isEmpty()) 
         {
-            store.load();
-            if (herramientas.getEstudiantes().isEmpty() && herramientas.getConvenios().isEmpty()) 
-            {
-                herramientas.datos(); // usa tus datos iniciales solo si no hay CSV
-            }
-        } catch (IOException ex) 
+            herramientas.datos();
+        }
+        } catch (Exception ex) 
         {
             System.out.println("No se pudo cargar CSV: " + ex.getMessage());
         }
+
+        // 2Mostrar ruta de trabajo para ubicar la carpeta 'data'
+        System.out.println("Working dir: " + java.nio.file.Paths.get("").toAbsolutePath());
+        
+        // Si cerramos sin seleccionar la opcion 0
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> 
+        {
+            try { store.save(); } catch (Exception ignored) {}
+        }));
         
         //MENÚ
         while(true)
         {
             System.out.println("\n=== Sistema Gestión de Intercambio ===");
             System.out.println("1) Registrar estudiante");
-            System.out.println("2) Crear trámite de postulación");
+            System.out.println("2) Tramite");
             System.out.println("3) Subir documento a trámite");
             System.out.println("4) Ver estado de trámite");
             System.out.println("5) Listar convenios y trámites");
@@ -84,25 +92,102 @@ public class Main
                         }
                         break;
                     }
-                    case "2": 
-                    {
-                        System.out.print("Código convenio: "); 
-                        String idConvenio = leer.nextLine();
-                        System.out.print("RUT estudiante: "); 
-                        String rut = leer.nextLine();
-
-                        Convenio conve = herramientas.buscarConvenio(idConvenio);
-                        Estudiante estu = herramientas.buscarEstudiante(rut);
-                        if (conve == null || estu == null) 
-                        { 
-                            System.out.println("Datos no válidos."); 
-                            break; 
+                    case "2": // SUBMENÚ de CONVENIOS -> TRÁMITES (2da colección anidada)
+                    { 
+                        System.out.print("ID del Convenio: ");
+                        String idC = leer.nextLine();
+                        Convenio c = herramientas.buscarConvenio(idC);
+                        if (c == null) {
+                            System.out.println("No existe un convenio con id: " + idC);
+                            break;
                         }
 
-                        Tramite tra = conve.crearTramite(estu);
-                        System.out.println("Trámite creado: " + tra.getIdTramite());
-                        System.out.println("Requisitos: " + conve.getRequisitos());
-                        break;
+                        while (true) {
+                            System.out.println("\n=== Submenú Trámites del Convenio " + idC + " ===");
+                            System.out.println("1) Crear trámite (para un RUT estudiante)");
+                            System.out.println("2) Listar trámites");
+                            System.out.println("3) Subir documento a un trámite");
+                            System.out.println("4) Eliminar trámite");
+                            System.out.println("5) Eliminar documento de un trámite");
+                            System.out.println("0) Volver");
+                            System.out.print("Opción: ");
+                            String op2 = leer.nextLine();
+
+                            try {
+                                switch (op2) {
+                                    case "1": { // Crear
+                                        System.out.print("RUT del estudiante: ");
+                                        String rut = leer.nextLine();
+                                        System.out.print("ID de trámite: ");
+                                        String idT = leer.nextLine();
+                                        boolean ok = herramientas.crearTramite(idC, rut, idT.isBlank() ? null : idT);
+                                        System.out.println(ok ? "Trámite creado." : "No se pudo crear (revisa convenio/rut).");
+                                        break;
+                                    }
+                                    case "2": { // Listar
+                                        java.util.List<Tramite> ts = herramientas.listarTramites(idC);
+                                        if (ts.isEmpty()) {
+                                            System.out.println("Sin trámites.");
+                                        } else {
+                                            for (Tramite t : ts) {
+                                                System.out.println("- " + t.getIdTramite()
+                                                        + " | Estudiante: " + t.getEstudiante().getRut()
+                                                        + " | Estado: " + t.getEstado()
+                                                        + " | Docs: " + t.getDocumentos().keySet());
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    case "3": { // Subir documento
+                                        System.out.print("ID Trámite: ");
+                                        String idT = leer.nextLine();
+                                        System.out.println("Tipos válidos:");
+                                        for (TipoDocumento td : TipoDocumento.values()) System.out.println(" - " + td.name());
+                                        System.out.print("Tipo documento: ");
+                                        String tipo = leer.nextLine();
+                                        System.out.print("Nombre archivo: ");
+                                        String arch = leer.nextLine();
+                                        try {
+                                            boolean ok = herramientas.subirDocumentoATramite(idC, idT, TipoDocumento.valueOf(tipo.trim()), arch);
+                                            System.out.println(ok ? "Documento subido." : "No se pudo subir (revisa ids).");
+                                        } catch (IllegalArgumentException ex) {
+                                            System.out.println("TipoDocumento inválido.");
+                                        }
+                                        break;
+                                    }
+                                    case "4": { // Eliminar trámite
+                                        System.out.print("ID Trámite: ");
+                                        String idT = leer.nextLine();
+                                        boolean ok = herramientas.eliminarTramite(idC, idT);
+                                        System.out.println(ok ? "Trámite eliminado." : "No se pudo eliminar.");
+                                        break;
+                                    }
+                                    case "5": { // Eliminar documento de un trámite
+                                        System.out.print("ID Trámite: ");
+                                        String idT = leer.nextLine();
+                                        System.out.println("Tipos válidos:");
+                                        for (TipoDocumento td : TipoDocumento.values()) System.out.println(" - " + td.name());
+                                        System.out.print("Tipo documento a eliminar: ");
+                                        String tipo = leer.nextLine();
+                                        try {
+                                            boolean ok = herramientas.eliminarDocumentoDeTramite(idC, idT, TipoDocumento.valueOf(tipo.trim()));
+                                            System.out.println(ok ? "Documento eliminado." : "No se pudo eliminar (revisa ids).");
+                                        } catch (IllegalArgumentException ex) {
+                                            System.out.println("TipoDocumento inválido.");
+                                        }
+                                        break;
+                                    }
+                                    case "0":
+                                        // volver al menú principal
+                                        System.out.println("Volviendo…");
+                                        return; // <- sale del case "2" y vuelve al menú principal
+                                    default:
+                                        System.out.println("Opción inválida.");
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Error: " + e.getMessage());
+                            }
+                        }
                     }
                     case "3":
                     {
@@ -197,7 +282,7 @@ public class Main
                                 try 
                                 {
                                     conve.agregarRequisito(TipoDocumento.valueOf(tipo));
-                                    System.out.println("OK: requisito agregado y trámites revalidados.");
+                                    System.out.println("Requisito agregado y trámites revalidados.");
                                 } 
                                 catch (IllegalArgumentException e) 
                                 {
@@ -211,7 +296,7 @@ public class Main
                                 try 
                                 {
                                     conve.quitarRequisito(TipoDocumento.valueOf(tipo));
-                                    System.out.println("OK: requisito quitado y trámites revalidados.");
+                                    System.out.println("Requisito quitado y trámites revalidados.");
                                 } 
                                 catch (IllegalArgumentException e) 
                                 {
@@ -256,8 +341,13 @@ public class Main
                         break;
                     }
                     case "0": 
-                        try { store.save(); } catch (IOException ex) {
-                        System.out.println("No se pudo guardar CSV: " + ex.getMessage());
+                        try 
+                        {
+                            store.save();
+                            System.out.println("Datos guardados en carpeta 'data/'.");
+                        } catch (Exception ex) 
+                        {
+                                System.out.println("No se pudo guardar CSV: " + ex.getMessage());
                         }
                         return;
                     default: System.out.println("Opción inválida.");

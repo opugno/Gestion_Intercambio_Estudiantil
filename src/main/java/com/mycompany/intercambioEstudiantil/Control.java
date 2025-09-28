@@ -59,6 +59,90 @@ public class Control
         lista.sort(Comparator.comparing(Estudiante::getNombre, String.CASE_INSENSITIVE_ORDER));
         return Collections.unmodifiableList(lista); // no modificable desde afuera
     }
+    
+    // Buscar un trámite por id dentro de un convenio
+    public Tramite buscarTramite(String idConvenio, String idTramite) {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) return null;
+        for (Tramite t : c.getTramites()) {
+            if (t.getIdTramite().equals(idTramite)) return t;
+        }
+        return null;
+    }
+
+    // Crear trámite para un estudiante en un convenio (idTramite opcional)
+    public boolean crearTramite(String idConvenio, String rutEstudiante, String idTramiteOpcional) {
+        Convenio c = buscarConvenio(idConvenio);
+        Estudiante e = buscarEstudiante(rutEstudiante);
+        if (c == null || e == null) return false;
+
+        Tramite t = c.crearTramite(e); // usa tu factory ya existente
+        if (idTramiteOpcional != null && !idTramiteOpcional.isBlank()) {
+            t.setIdTramite(idTramiteOpcional);
+        }
+        // recalcular estado por si hay requisitos
+        c.validarYActualizarEstado(t);
+        return true;
+    }
+
+    //Listar trámites de un convenio
+    public java.util.List<Tramite> listarTramites(String idConvenio) {
+        Convenio c = buscarConvenio(idConvenio);
+        return (c == null) ? java.util.Collections.emptyList() : new java.util.ArrayList<>(c.getTramites());
+    }
+
+    //Editar (estado y/o estudiante asignado)
+    public boolean editarTramite(String idConvenio, String idTramite,
+                                 Tramite.Estado nuevoEstado, String nuevoRutEstudiante) {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) return false;
+        Tramite t = buscarTramite(idConvenio, idTramite);
+        if (t == null) return false;
+
+        if (nuevoRutEstudiante != null && !nuevoRutEstudiante.isBlank()) {
+            Estudiante nuevo = buscarEstudiante(nuevoRutEstudiante);
+            if (nuevo == null) return false;
+            t.setEstudiante(nuevo);
+        }
+        if (nuevoEstado != null) {
+            t.setEstado(nuevoEstado);
+        }
+        c.validarYActualizarEstado(t);
+        return true;
+    }
+
+    // Eliminar trámite
+    public boolean eliminarTramite(String idConvenio, String idTramite) {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) return false;
+        return c.getTramites().removeIf(x -> x.getIdTramite().equals(idTramite));
+    }
+
+    // Acciones de documentos dentro del trámite
+    public boolean subirDocumentoATramite(String idConvenio, String idTramite,
+                                          TipoDocumento tipo, String nombreArchivo) {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) return false;
+        Tramite t = buscarTramite(idConvenio, idTramite);
+        if (t == null) return false;
+
+        t.subirDocumento(tipo, nombreArchivo);
+        c.validarYActualizarEstado(t);
+        return true;
+    }
+
+    public boolean eliminarDocumentoDeTramite(String idConvenio, String idTramite, TipoDocumento tipo) {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) return false;
+        Tramite t = buscarTramite(idConvenio, idTramite);
+        if (t == null) return false;
+
+        if (t.getDocumentos().remove(tipo) != null) {
+            c.validarYActualizarEstado(t);
+            return true;
+        }
+        return false;
+    }
 
     
     
