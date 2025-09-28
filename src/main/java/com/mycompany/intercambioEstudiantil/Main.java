@@ -118,7 +118,7 @@ public class Main
                                     case "1": { // Crear
                                         System.out.print("RUT del estudiante: ");
                                         String rut = leer.nextLine();
-                                        System.out.print("ID de trámite: ");
+                                        System.out.print("ID de trámite (T-1/ C-3) Opcional, puedes presionar enter y se crea solo el ID: ");
                                         String idT = leer.nextLine();
                                         boolean ok = herramientas.crearTramite(idC, rut, idT.isBlank() ? null : idT);
                                         System.out.println(ok ? "Trámite creado." : "No se pudo crear (revisa convenio/rut).");
@@ -139,7 +139,7 @@ public class Main
                                         break;
                                     }
                                     case "3": { // Subir documento
-                                        System.out.print("ID Trámite: ");
+                                        /*System.out.print("ID Trámite: ");
                                         String idT = leer.nextLine();
                                         System.out.println("Tipos válidos:");
                                         for (TipoDocumento td : TipoDocumento.values()) System.out.println(" - " + td.name());
@@ -152,6 +152,29 @@ public class Main
                                             System.out.println(ok ? "Documento subido." : "No se pudo subir (revisa ids).");
                                         } catch (IllegalArgumentException ex) {
                                             System.out.println("TipoDocumento inválido.");
+                                        }
+                                        break;*/
+                                        System.out.print("ID Trámite: ");
+                                        String idT = leer.nextLine();
+                                        System.out.println("Tipos válidos:");
+                                        for (TipoDocumento td : TipoDocumento.values()) System.out.println(" - " + td.name());
+                                        System.out.print("Tipo documento: ");
+                                        String tipo = leer.nextLine();
+                                        System.out.print("Nombre archivo: ");
+                                        String arch = leer.nextLine();
+
+                                        try {
+                                            TipoDocumento td = TipoDocumento.valueOf(tipo.trim());
+                                            herramientas.subirDocumentoATramiteStrict(idC, idT, td, arch);
+                                            System.out.println("Documento subido.");
+                                        } catch (IllegalArgumentException ex) { // valueOf falló
+                                            System.out.println("TipoDocumento inválido.");
+                                        } catch (DocumentoDuplicadoException ex) {
+                                            System.out.println("⚠ " + ex.getMessage());
+                                        } catch (TramiteNoEncontradoException ex) {
+                                            System.out.println("⚠ " + ex.getMessage());
+                                        } catch (Exception ex) {
+                                            System.out.println("Error inesperado: " + ex.getMessage());
                                         }
                                         break;
                                     }

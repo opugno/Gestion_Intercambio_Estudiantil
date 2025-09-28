@@ -1,6 +1,9 @@
 com\mycompany\intercambioEstudiantil\TipoDocumento.class
+com\mycompany\intercambioEstudiantil\TramiteNoEncontradoException.class
 com\mycompany\intercambioEstudiantil\DocumentoSubido.class
+com\mycompany\intercambioEstudiantil\EstudianteNoEncontradoException.class
 com\mycompany\intercambioEstudiantil\Estudiante.class
+com\mycompany\intercambioEstudiantil\DocumentoDuplicadoException.class
 com\mycompany\intercambioEstudiantil\Main.class
 com\mycompany\intercambioEstudiantil\Convenio.class
 com\mycompany\intercambioEstudiantil\Tramite$Estado.class

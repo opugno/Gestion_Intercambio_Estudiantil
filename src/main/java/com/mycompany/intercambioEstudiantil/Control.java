@@ -164,5 +164,26 @@ public class Control
         agregarConvenio(new Convenio("B-2025", "Convenio B", "Universidad B", "País B", reqB, "Doce meses", "Ingeniería Industrial"));
         
     }
+    
+    //  Versiones que lanzan excepciones para SIA 2.8 y 2.9
+    public Estudiante buscarEstudianteStrict(String rut) throws EstudianteNoEncontradoException {
+        Estudiante e = buscarEstudiante(rut);
+        if (e == null) throw new EstudianteNoEncontradoException(rut);
+        return e;
+    }
+
+    public void subirDocumentoATramiteStrict(String idConvenio, String idTramite,
+                                             TipoDocumento tipo, String nombreArchivo)
+            throws TramiteNoEncontradoException, DocumentoDuplicadoException {
+        Convenio c = buscarConvenio(idConvenio);
+        if (c == null) throw new TramiteNoEncontradoException(idTramite); // Podemos crear ConvenioNoEncontradoException
+
+        Tramite t = buscarTramite(idConvenio, idTramite);
+        if (t == null) throw new TramiteNoEncontradoException(idTramite);
+
+        t.subirDocumentoSeguro(tipo, nombreArchivo); // Aqui puede saltar DocumentoDuplicadoException
+        c.validarYActualizarEstado(t);
+    }
+
 }
 

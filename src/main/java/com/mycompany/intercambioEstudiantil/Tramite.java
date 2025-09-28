@@ -75,5 +75,19 @@ public class Tramite
         }
         return true;
     }
+    
+    public void subirDocumentoSeguro(TipoDocumento tipo, String nombreArchivo) throws DocumentoDuplicadoException 
+    {
+    if (documentosYaTiene(tipo)) {
+        throw new DocumentoDuplicadoException("El documento " + tipo + " ya está subido para este trámite.");
+    }
+    subirDocumento(tipo, nombreArchivo);
+    }
+
+    private boolean documentosYaTiene(TipoDocumento tipo) 
+    {
+        return this.getDocumentos().containsKey(tipo);
+    }
+
 }
 
