@@ -47,6 +47,7 @@ public class Main
             System.out.println("5) Convenio");
             System.out.println("6) Configurar requisitos de un convenio");
             System.out.println("7) Ver estudiantes");
+            System.out.println("8) Buscar (1 o más niveles)");
             System.out.println("0) Salir");
             System.out.print("Opcion: ");
             String menu = leer.nextLine();
@@ -480,6 +481,82 @@ public class Main
                         }
                         break;
                     }
+                    case "8":{ // SUBMENÚ BÚSQUEDA
+                        while (true) 
+                        {
+                            System.out.println("1) Buscar en Estudiantes (nivel 1)");
+                            System.out.println("2) Buscar en Convenios (nivel 1)");
+                            System.out.println("3) Buscar en Trámites (nivel 2)");
+                            System.out.println("4) Buscar por Documento (en Trámites)");
+                            System.out.println("5) Búsqueda Global (1+2 niveles)");
+                            System.out.println("0) Volver");
+                            System.out.print("Opción: ");
+                            String opB = leer.nextLine();
+
+                            if (opB.equals("0")) { System.out.println("Volviendo…"); break; }
+
+                            System.out.print("Texto a buscar: ");
+                            String q = leer.nextLine();
+
+                            switch (opB) {
+                                case "1": { // Estudiantes
+                                    var lst = herramientas.buscarEstudiantesPorNombre(q);
+                                    if (lst.isEmpty()) System.out.println("Sin resultados.");
+                                    else for (Estudiante e : lst)
+                                        System.out.println("- " + e.getRut() + " | " + e.getNombre() + " | " + e.getCarrera()
+                                                + (e.getEstadoProceso()==null? "" : " | Estado: " + e.getEstadoProceso()));
+                                    break;
+                                }
+                                case "2": { // Convenios
+                                    var lst = herramientas.buscarConveniosPorId(q);
+                                    if (lst.isEmpty()) System.out.println("Sin resultados.");
+                                    else for (Convenio c : lst)
+                                        System.out.println("- " + c.getIdConvenio() + " | " + c.getNombre()
+                                                + " | " + c.getUniversidadSocia() + " | " + c.getPais());
+                                    break;
+                                }
+                                case "3": { // Trámites
+                                    System.out.println("Aquí puedes buscar por idTramite, rut/nombre estudiante, estado, convenio, documentos");
+                                    var lst = herramientas.buscarTramitesPorTexto(q);
+                                    if (lst.isEmpty()) System.out.println("Sin resultados.");
+                                    else for (Tramite t : lst) {
+                                        String rut = (t.getEstudiante()==null? "-" : t.getEstudiante().getRut());
+                                        System.out.println("- " + t.getIdTramite() + " | Est: " + rut
+                                                + " | Estado: " + t.getEstado());
+                                    }
+                                    break;
+                                }
+                                case "4": { // Documentos (en trámites)
+                                    var lst = herramientas.buscarTramitesPorDocumento(q);
+                                    if (lst.isEmpty()) System.out.println("Sin resultados.");
+                                    else for (Tramite t : lst) {
+                                        String rut = (t.getEstudiante()==null? "-" : t.getEstudiante().getRut());
+                                        System.out.print("- " + t.getIdTramite() + " | Est: " + rut + " | Docs: ");
+                                        if (t.getDocumentos()==null || t.getDocumentos().isEmpty()) {
+                                            System.out.println("-");
+                                        } else {
+                                            java.util.List<String> parts = new java.util.ArrayList<>();
+                                            for (java.util.Map.Entry<TipoDocumento, DocumentoSubido> e : t.getDocumentos().entrySet()) {
+                                                String nom = (e.getValue()==null || e.getValue().getNombreArchivo()==null) ? "-" : e.getValue().getNombreArchivo();
+                                                parts.add(e.getKey().name() + ":" + nom);
+                                            }
+                                            System.out.println(String.join(", ", parts));
+                                        }
+                                    }
+                                    break;
+                                }
+                                case "5": { // Global
+                                    var lst = herramientas.buscarGlobal(q);
+                                    if (lst.isEmpty()) System.out.println("Sin resultados.");
+                                    else for (String line : lst) System.out.println("- " + line);
+                                    break;
+                                }
+                                default:
+                                    System.out.println("Opción inválida.");
+                            }
+                        }
+                        break;
+                    }    
                     case "0": 
                         try 
                         {
