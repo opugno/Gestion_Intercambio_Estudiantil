@@ -64,6 +64,21 @@ public class Estudiante
     public void setConvenio(Convenio convenio){
         this.convenio = convenio;
     }
+    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Estudiante)) return false;
+        Estudiante other = (Estudiante) o;
+        return this.rut != null && this.rut.equals(other.rut);
+    }
+
+    @Override
+    public int hashCode() {
+        return rut == null ? 0 : rut.hashCode();
+    }
+
 }
 
 

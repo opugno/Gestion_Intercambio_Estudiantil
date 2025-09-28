@@ -136,4 +136,19 @@ public class Convenio
             for (Tramite trami : tramites) validarYActualizarEstado(trami);
         }
     }
+    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Convenio)) return false;
+        Convenio other = (Convenio) o;
+        return this.idConvenio != null && this.idConvenio.equals(other.idConvenio);
+    }
+
+    @Override
+    public int hashCode() {
+        return idConvenio == null ? 0 : idConvenio.hashCode();
+    }
+
 }
