@@ -137,7 +137,7 @@ public class Control
         Tramite t = buscarTramite(idConvenio, idTramite);
         if (t == null) return false;
 
-        if (t.getDocumentos().remove(tipo) != null) {
+        if (t.eliminarDocumento(tipo)) {
             c.validarYActualizarEstado(t);
             return true;
         }
@@ -323,6 +323,10 @@ public class Control
         return res;
     }
 
-
+    public List<Estudiante> filtrarEstudiantesPorEstado(String estado) {
+        return getEstudiantes().stream()
+                .filter(e -> e.getEstadoProceso() != null && e.getEstadoProceso().equalsIgnoreCase(estado))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
 

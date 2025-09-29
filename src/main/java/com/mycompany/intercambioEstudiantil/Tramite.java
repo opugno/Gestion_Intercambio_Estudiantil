@@ -12,6 +12,7 @@ public class Tramite
     private Estudiante estudiante;
     private Map<TipoDocumento, DocumentoSubido> documento = new HashMap<>();
     private Estado estado =  Estado.EN_PROCESO;
+    private Convenio convenio;
     
     //CONSTRUCTOR
     public Tramite(String idTramite, Estudiante estudiante)
@@ -20,6 +21,14 @@ public class Tramite
         this.estudiante = estudiante;
     }
     
+    public Tramite(String idTramite, Estudiante estudiante, Convenio convenio) {
+        this.idTramite = idTramite;
+        this.estudiante = estudiante;
+        this.estado = Estado.EN_PROCESO;
+        this.documento = new HashMap<>();
+        this.convenio = convenio;
+    }
+
     //SETTERS Y GETTERS
     public String getIdTramite(){
         return idTramite;
@@ -87,6 +96,10 @@ public class Tramite
     private boolean documentosYaTiene(TipoDocumento tipo) 
     {
         return this.getDocumentos().containsKey(tipo);
+    }
+    
+    public boolean eliminarDocumento(TipoDocumento tipo) {
+        return documento.remove(tipo) != null;
     }
 
 }
